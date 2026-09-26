@@ -1,5 +1,5 @@
 // Drive REST v3（UrlFetch + ScriptApp.getOAuthToken）。
-// 不用 Advanced Drive Service，避免委員需另外啟用服務。
+// manifest 宣告 Advanced Drive Service 只為了在預設 GCP project 啟用 Drive API（否則 403 accessNotConfigured）；程式不呼叫 Drive.*。
 // 使用 drive scope（而非 drive.file）：系統資料夾由網站管理者建立並分享給試算表編輯者，
 // 任何委員按「發布網站」都寫入同一份 public-dataset.json；drive.file 只允許建立者本人寫入。
 
@@ -38,7 +38,14 @@ function call(url: string, opts: GoogleAppsScript.URL_Fetch.URLFetchRequestOptio
   if (code >= 400) {
     const reason =
       code === 404 ? '找不到檔案，或你沒有檢視權限' : code === 403 ? '沒有權限（檔案可能未分享給你，或網域禁止此操作）' : `Drive 錯誤 ${code}`;
-    throw new DriveError(reason, code);
+    let detail = '';
+    try {
+      const err = (JSON.parse(res.getContentText()) as { error?: { message?: string; errors?: { reason?: string }[] } }).error;
+      detail = [err?.errors?.[0]?.reason, err?.message].filter(Boolean).join(': ');
+    } catch {
+      // 非 JSON 回應
+    }
+    throw new DriveError(detail ? `${reason}（${detail}）` : reason, code);
   }
   return res;
 }

@@ -42,9 +42,9 @@
 - **文件核准快取**：
   - 原始文件可能隨時被修改。網站只顯示「人看過並核准」的遮蔽後版本。
   - 快取以 revision（`fileId@modifiedTime`）比對，文件被修改時標示 stale，但不會自動套用新版本。
-- **Drive REST 而非 DriveApp／Advanced Service**：
+- **Drive REST（UrlFetch）而非 DriveApp**：
   - 需要 `export?mimeType=text/markdown`，DriveApp 做不到。
-  - Advanced Service 需要另外啟用，增加交接步驟。
+  - `appsscript.json` 宣告 Advanced Drive Service（v3）只是為了讓 Apps Script 預設 GCP project 啟用 Drive API；少了它，UrlFetch 呼叫 Drive REST 會得到 403 `accessNotConfigured`。程式本身不呼叫 `Drive.*`。
 - **`drive` scope**：讓任何編輯者發布時都寫入同一份系統檔案。這個取捨請見 README 第 5 節。
 - **保護欄位用 warning-only**：
   - 選單動作以按下的人的身分執行。
