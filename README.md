@@ -75,7 +75,7 @@ npm run smoke               # build 後檢查頁面、索引、個資／私人�
      5. privacy gate
      6. Zod 與關聯驗證
    - 有 error 時不寫出檔案，網站保持上一版。
-   - 通過時寫入 Drive 的 `public-dataset.json`、存一份歷史快照，再呼叫 GitHub `workflow_dispatch`。
+   - 通過時寫入 Drive 的 `public-dataset.json`、存一份歷史快照。有設定 GitHub token 時再呼叫 `workflow_dispatch` 立即建置，否則由每日排程建置。
 3. GitHub Actions 下載該檔，並用**同一份** validator 與 PII detector 再檢查一次。檢查失敗時 build 失敗、不部署。
 4. Build 時產生衍生資料，委員不需要維護：
    - 統計數與最近更新
@@ -125,7 +125,9 @@ npm run build:apps-script        # → apps-script/dist/Code.js + appsscript.jso
 | `script.container.ui` | 選單與對話框 |
 | `script.scriptapp` | 安裝 triggers |
 
-最後執行「管委會網站 → 技術設定」，填入：
+「管委會網站 → 技術設定」會顯示公開資料網址，把它設為 GitHub variable `PUBLIC_DATASET_URL`（第 7 節）。
+
+**GitHub token（選用）**：不設定時，「發布網站」只匯出資料，網站在每日排程時更新，沒有需要續期的憑證。想讓「發布網站」立即更新網站時，才在「技術設定」填入：
 
 - GitHub repo：`owner/name`
 - **fine-grained PAT**：只選此 repo，權限只給 `Actions: Read and write`，並設定到期日。token 存在 Script Properties，不回顯，也不會出現在試算表或網站。
@@ -134,7 +136,7 @@ npm run build:apps-script        # → apps-script/dist/Code.js + appsscript.jso
 
 | 方式 | 何時 |
 |---|---|
-| 「管委會網站 → 發布網站」 | 委員更新後手動發布，約 3–5 分鐘上線 |
+| 「管委會網站 → 發布網站」 | 委員更新後匯出公開資料。有設定 token 時約 3–5 分鐘上線；未設定時於隔日清晨的每日建置上線 |
 | Apps Script 每日 03:00 匯出 + GitHub 每日 04:00（台北）建置 | 沒按發布也會每日同步；也讓「已排程 → 已舉行」隨日期更新 |
 | push 到 `main` | 程式變更 |
 | GitHub Actions → Deploy → Run workflow | 手動重建 |
@@ -207,7 +209,7 @@ Generated data 不會 commit，只存在 runner 與 Pages artifact 中。
 | 資料被誤改或誤刪 | 用試算表的「檔案 → 版本記錄」還原 |
 | 公開資料檔損毀 | 從 Drive「管委會網站（系統檔案）/公開資料歷史版本（私有）」取最近的快照，複製內容覆寫 `public-dataset.json`，再重跑 Deploy |
 | 下拉選單、欄位、trigger 壞掉 | 執行「初始化／修復試算表」 |
-| GitHub token 過期 | 產生新的 fine-grained PAT，填到「技術設定」。在此期間網站仍會靠每日排程更新 |
+| GitHub token 過期（有設定時） | 產生新的 fine-grained PAT，填到「技術設定」。在此期間網站仍會靠每日排程更新 |
 | GitHub 排程停止 | 公開 repo 連續 60 天沒有活動時，GitHub 會停用 schedule，到 Actions 頁面重新啟用即可 |
 | 整個網站重建 | 本 repo 加上試算表就能完全重建。所有頁面都由資料產生，沒有手寫內容 |
 
@@ -216,11 +218,11 @@ Generated data 不會 commit，只存在 runner 與 Pages artifact 中。
 1. 把試算表擁有權轉給新負責人。Apps Script 跟著試算表走。
 2. 新負責人依序執行：
    1. 「初始化／修復試算表」：以新負責人身分重新安裝 triggers，並停用舊負責人的 triggers。
-   2. 「技術設定」：填入新的 PAT。
+   2. 「技術設定」：有使用 token 時填入新的 PAT。
    3. 「技術設定 → 重新建立系統檔案」，再「發布網站」：程式會以新負責人身分建立新的系統資料夾與 `public-dataset.json`。程式不會自動另建檔案，因為那樣 GitHub 會繼續讀舊檔。
    4. 把新的公開資料網址更新到 GitHub variable `PUBLIC_DATASET_URL`。
    5. 會議與辦法文件需要重新「預覽並核准」，除非舊的快取資料夾仍分享給新負責人。
 3. 轉移 GitHub repo 或新增 admin。
-4. 撤銷舊負責人的 PAT。
+4. 有使用 token 時，撤銷舊負責人的 PAT。
 
 更完整的交接清單請看 [docs/MAINTAINER.md](docs/MAINTAINER.md)。

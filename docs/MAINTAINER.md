@@ -11,7 +11,7 @@
 | Apps Script | 綁在試算表上（擴充功能 → Apps Script） | 同上 |
 | 系統檔案 | Drive「管委會網站（系統檔案）」 | 同上，分享給編輯者 |
 | 原始文件 | 委員各自的 Drive | 各委員 |
-| GitHub PAT | Apps Script → Script Properties `GITHUB_TOKEN` | 簽發者本人，有到期日 |
+| GitHub PAT（選用） | Apps Script → Script Properties `GITHUB_TOKEN` | 簽發者本人，有到期日；未設定時只靠每日排程 |
 | 公開資料網址 | GitHub → Settings → Variables `PUBLIC_DATASET_URL` | repo admin |
 
 沒有其他系統：沒有 server、資料庫、雲端帳單、service account，也沒有 OAuth refresh token。
@@ -21,10 +21,9 @@
 - [ ] 取得 GitHub repo admin，確認 Settings → Pages 的 Source 是 GitHub Actions
 - [ ] 取得試算表擁有權（或至少編輯權）
 - [ ] 本機執行 `npm ci && npm test && npm run build && npm run smoke`，全部通過
-- [ ] 產生自己的 fine-grained PAT（只選此 repo，權限 `Actions: Read and write`，設定到期日，建議一年），填入「技術設定」
-- [ ] 撤銷前任的 PAT
+- [ ] 有使用 PAT 時：產生自己的 fine-grained PAT（只選此 repo，權限 `Actions: Read and write`，設定到期日，建議一年），填入「技術設定」，並撤銷前任的 PAT
 - [ ] 擁有權移轉時依 README 第 10 節處理：重新安裝 triggers、重建系統檔案、更新 `PUBLIC_DATASET_URL`
-- [ ] 在行事曆記下 PAT 到期日
+- [ ] 有使用 PAT 時，在行事曆記下到期日
 
 ## 設計決策與理由
 
@@ -64,6 +63,7 @@
 1. 看試算表的「發布紀錄」分頁：
    - 「發布網站 失敗」：資料有錯，說明欄會列出分頁、列號與原因，請委員依說明修正。
    - 「觸發網站建置 警告」：PAT 過期或權限不足，請更新「技術設定」。
+   - 沒有設定 PAT 時，網站本來就要等每日排程（台北 04:00）才更新；急用時到 Actions → Deploy → Run workflow。
 2. 看 GitHub → Actions → Deploy 的最近一次執行：
    - 失敗在 `下載公開資料`：`PUBLIC_DATASET_URL` 錯了，或 Drive 檔案不再公開。
    - 失敗在 `驗證並建置`：log 中的 `::error` 就是原因，與 Sheet 上看到的相同。

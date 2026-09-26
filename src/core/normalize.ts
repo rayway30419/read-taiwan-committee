@@ -64,7 +64,9 @@ export function normalizeRecord(kind: EntityKind, rec: Record<string, unknown>):
         out[col.key] = col.key === 'display_id' ? (normalizeId(normalizeText(v)) ?? normalizeText(v)) : normalizeDate(v);
         break;
       default:
-        if (typeof v === 'string' || v === null || v === undefined) out[col.key] = normalizeText(v);
+        // 文字欄被 Sheets 自動轉成日期或數字（例如輸入「10/2」）時，轉回文字，不讓 build 失敗
+        if (v instanceof Date && !Number.isNaN(v.getTime())) out[col.key] = formatDate(v);
+        else if (typeof v === 'string' || typeof v === 'number' || v === null || v === undefined) out[col.key] = normalizeText(v);
     }
   }
   return out;

@@ -1,6 +1,6 @@
 // 「檢查資料」與「發布網站」選單動作。
-// 發布 = 配發編號 → 驗證 → 匯出 public-dataset.json → 觸發 GitHub Actions（workflow_dispatch）。
-// GitHub token 存在 Script Properties（技術設定），不寫在 Sheet 或程式碼。
+// 發布 = 配發編號 → 驗證 → 匯出 public-dataset.json →（有設定 token 時）觸發 GitHub Actions（workflow_dispatch）。
+// 未設定 token 時由每日排程建置。token 存在 Script Properties（技術設定），不寫在 Sheet 或程式碼。
 import { sweepAll } from './ids';
 import { buildFromSheet, exportPublic, summarize } from './exporter';
 import { writeLog } from './log';
@@ -30,11 +30,12 @@ export function checkData() {
   showDialog('檢查資料', resultHtml(s.errors, s.warnings, sweep.notes, s.stats));
 }
 
-function dispatchWorkflow(): { ok: boolean; message: string; url?: string } {
+// 未設定 token 是正常的選項：網站由 GitHub Actions 每日排程建置，不算警告
+function dispatchWorkflow(): { ok: boolean; skipped?: boolean; message: string; url?: string } {
   const token = getProp(PROP.GITHUB_TOKEN);
   const repo = getProp(PROP.GITHUB_REPO);
   const workflow = getProp(PROP.GITHUB_WORKFLOW) || DEFAULT_WORKFLOW;
-  if (!token || !repo) return { ok: false, message: '尚未設定 GitHub 連線（管委會網站 → 技術設定）。公開資料已更新，網站會在每日自動建置時（約清晨 4 點）更新。' };
+  if (!token || !repo) return { ok: true, skipped: true, message: '公開資料已更新。網站會在每天清晨約 4 點自動更新。' };
   const res = UrlFetchApp.fetch(`https://api.github.com/repos/${repo}/actions/workflows/${workflow}/dispatches`, {
     method: 'post',
     contentType: 'application/json',
@@ -59,9 +60,9 @@ export function publishSite() {
     showDialog('發布網站', resultHtml(s.errors, s.warnings, sweep.notes, s.stats));
     return;
   }
-  toast('公開資料已更新，通知 GitHub 建置…');
+  toast('公開資料已更新…');
   const d = dispatchWorkflow();
-  writeLog('觸發網站建置', d.ok ? '成功' : '警告', d.message);
+  if (!d.skipped) writeLog('觸發網站建置', d.ok ? '成功' : '警告', d.message);
   const extra = `<p class="${d.ok ? 'ok' : 'warn'}">${esc(d.message)}</p>${d.url ? `<p><a href="${esc(d.url)}" target="_blank" rel="noopener">查看建置進度（GitHub）</a></p>` : ''}`;
   showDialog('發布網站', resultHtml([], s.warnings, sweep.notes, s.stats, extra));
 }

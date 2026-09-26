@@ -90,8 +90,11 @@ function applyColumn(sheet: Sheet, c: Column, col: number) {
     case 'url':
       rule = dv().requireTextIsUrl().setAllowInvalid(false).setHelpText('請貼上完整網址（https://…）').build();
       break;
+    case 'text':
+      body.setNumberFormat('@'); // 避免「10/2」被自動轉成日期
+      break;
     case 'longtext':
-      body.setWrap(true);
+      body.setNumberFormat('@').setWrap(true);
       break;
     case 'auto':
       body.setBackground('#f3f4f6').setFontColor('#4b5563');

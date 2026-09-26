@@ -24,7 +24,9 @@ describe('normalize', () => {
       source_meeting_id: '',
       due_date: '2026/10/2',
       title: '  補齊報價\r\n ',
+      schedule_note: new Date('2026-10-01T16:00:00Z'),
+      support: 42,
     });
-    expect(r).toMatchObject({ display_id: 'ACT-20260922-01', issue_id: 'ISS-0002', source_meeting_id: '', due_date: '2026-10-02', title: '補齊報價' });
+    expect(r).toMatchObject({ display_id: 'ACT-20260922-01', issue_id: 'ISS-0002', source_meeting_id: '', due_date: '2026-10-02', title: '補齊報價', schedule_note: '2026-10-02', support: '42' });
   });
 });
