@@ -1,0 +1,15 @@
+---
+// 給 Pagefind 的中介資料：type filter、編號、badge、摘要；ID 別名讓 ISS-012 / ISS12 也能搜到；
+// 中文逐字文字讓搜尋有子字串語意（見 src/lib/search-query.ts）。
+import { idAliases } from '../core/refs';
+import { spacedText } from '../lib/search-query';
+interface Props { type: string; id: string; title: string; badge?: string; summary?: string; text?: (string | null | undefined)[] }
+const { type, id, title, badge, summary, text = [] } = Astro.props;
+const short = (summary ?? '').replace(/\s+/g, ' ').trim();
+---
+<span hidden data-pagefind-filter={`type:${type}`}></span>
+<span hidden data-pagefind-meta={`id:${id}`}></span>
+<span hidden data-pagefind-meta={`title:${title}`}></span>
+{badge && <span hidden data-pagefind-meta={`badge:${badge}`}></span>}
+{short && <span hidden data-pagefind-meta={`summary:${short.length > 120 ? `${short.slice(0, 120)}…` : short}`}></span>}
+<p class="sr-only" aria-hidden="true" data-pagefind-weight="0.2">{idAliases(id).join(' ')} {spacedText([title, ...text])}</p>

@@ -1,0 +1,13 @@
+---
+import type { TocItem } from '../lib/markdown';
+interface Props { toc: TocItem[] }
+const { toc } = Astro.props;
+---
+{toc.length > 1 && (
+  <nav class="side-card toc toc-card" aria-labelledby="toc-title">
+    <h2 id="toc-title">本文目錄</h2>
+    <ol>
+      {toc.map((t) => <li class={`d${t.depth}`}><a href={`#${t.id}`}>{t.text}</a></li>)}
+    </ol>
+  </nav>
+)}

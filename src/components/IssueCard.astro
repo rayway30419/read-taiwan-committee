@@ -1,0 +1,21 @@
+---
+import type { Issue } from '../core/schema';
+import { hrefFor } from '../lib/urls';
+import { formatDate } from '../lib/format';
+import Badge from './Badge.astro';
+interface Props { issue: Issue; compact?: boolean; heading?: 'h2' | 'h3' }
+const { issue: i, compact = false, heading = 'h3' } = Astro.props;
+const H = heading;
+const excerpt = i.problem.length > 90 ? `${i.problem.slice(0, 90)}…` : i.problem;
+---
+<article class="card">
+  <div class="card-top">
+    <Badge status={i.status} />
+    <span class="id">{i.display_id}</span>
+    {i.priority && <span class="priority">{i.priority}{i.priority_confirmed ? '' : '（建議）'}</span>}
+  </div>
+  <H><a href={hrefFor(i.display_id)}>{i.title}</a></H>
+  {!compact && <p>{excerpt}</p>}
+  {i.next_action && <p class="next"><b>下一步</b>{i.next_action}</p>}
+  <p class="meta">{i.category}・更新 {formatDate(i.updated_at || i.created_at)}</p>
+</article>

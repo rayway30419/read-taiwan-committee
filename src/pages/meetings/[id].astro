@@ -1,0 +1,79 @@
+---
+import Base from '../../layouts/Base.astro';
+import Badge from '../../components/Badge.astro';
+import Crumb from '../../components/Crumb.astro';
+import Facts from '../../components/Facts.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import Related from '../../components/Related.astro';
+import Toc from '../../components/Toc.astro';
+import PagefindMeta from '../../components/PagefindMeta.astro';
+import { loadSite } from '../../data';
+import { isMeetingHeld, meetingBadge } from '../../core/derive';
+import { toneOf } from '../../core/enums';
+import { renderMarkdown } from '../../lib/markdown';
+import { hrefFor, url } from '../../lib/urls';
+import { formatDate } from '../../lib/format';
+import type { Meeting } from '../../core/schema';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.meetings.map((meeting) => ({ params: { id: meeting.display_id }, props: { meeting } }));
+}
+const { meeting: m } = Astro.props as { meeting: Meeting };
+const site = await loadSite();
+const held = isMeetingHeld(m, site.today);
+const badge = meetingBadge(m, site.today);
+const issues = site.rel.meetingIssues.get(m.display_id) ?? [];
+const doc = m.body_md ? renderMarkdown(m.body_md, { knownIds: site.knownIds, hrefFor }) : null;
+const note = [
+  m.confirmation_note && `${m.confirmation_note.replace(/・/g, '，')}。`,
+  m.record_version && `本文以 ${m.record_version} 為來源，`,
+  '敏感內容已標示遮蔽，其餘文字保留；最新進度請看相關議題。',
+].filter(Boolean).join('');
+---
+<Base title={`${m.title}（${formatDate(m.date)}）`} nav="meetings">
+  <Crumb items={[{ label: '總覽', href: url() }, { label: '會議紀錄', href: url('meetings/') }, { label: m.display_id }]} />
+  <div data-pagefind-body>
+    <PagefindMeta type="會議紀錄" id={m.display_id} title={m.title} badge={badge} summary={`${formatDate(m.date, true)}・${m.type}`} text={[m.body_md, m.type, m.location, m.confirmation_note]} />
+    <header class="detail-header">
+      <div class="card-top"><Badge status={m.status} label={badge} tone={badge === '已排程' ? 'neutral' : toneOf(m.status)} /><span class="id">{m.display_id}</span></div>
+      <h1>{m.title}</h1>
+      <p class="meta">{formatDate(m.date, true)}{m.time && ` ${m.time}`}・{m.type}{m.location && `・${m.location}`}</p>
+    </header>
+    <div class="detail-layout">
+      <div class="detail-main">
+        {doc ? (
+          <>
+            <p class="reading-note">{note}</p>
+            {m.body_stale && <p class="reading-note warn">原始文件已更新，網站內容待重新審核；目前顯示上次核准的版本。</p>}
+            <section class="article doc-body" aria-label="會議紀錄全文" set:html={doc.html} />
+          </>
+        ) : (
+          <div class="empty">
+            <h2>{held ? '會議紀錄整理中' : '會議尚未舉行，紀錄待補'}</h2>
+            <p>{held ? '紀錄經確認與遮蔽審核後會公開於此。' : `預定於 ${formatDate(m.date, true)}${m.time ? ` ${m.time}` : ''} 舉行。`}</p>
+          </div>
+        )}
+        <Related title="相關議題" count={issues.length} empty="目前沒有相關議題">
+          {issues.map((i) => <li><IssueCard issue={i} compact /></li>)}
+        </Related>
+      </div>
+      <aside aria-label="會議資訊" data-pagefind-ignore>
+        <section class="side-card" aria-labelledby="facts-title">
+          <h2 id="facts-title">會議資訊</h2>
+          <Facts
+            items={[
+              { label: '日期', value: `${formatDate(m.date, true)}${m.time ? ` ${m.time}` : ''}` },
+              { label: '類型', value: m.type },
+              { label: '確認狀態', value: badge },
+              { label: '紀錄版本', value: m.record_version },
+              ...(m.source_filename ? [{ label: '來源文件', value: m.source_filename }] : []),
+              ...(m.public_file_url ? [{ label: '原始檔案', value: '開啟公開檔案', href: m.public_file_url }] : []),
+            ]}
+          />
+        </section>
+        {doc && <Toc toc={doc.toc} />}
+      </aside>
+    </div>
+  </div>
+</Base>

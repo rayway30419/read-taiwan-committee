@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import MeetingCard from '../../components/MeetingCard.astro';
+import { loadSite } from '../../data';
+const site = await loadSite();
+const list = [...site.meetings].reverse();
+---
+<Base title="會議紀錄" nav="meetings">
+  <p class="eyebrow">會議紀錄</p>
+  <h1>會議紀錄</h1>
+  <p class="muted">已舉行會議的紀錄與確認狀態，以及已排程的會議。</p>
+  {list.length ? (
+    <ul class="stack" style="margin-top:24px">{list.map((m) => <li><MeetingCard meeting={m} today={site.today} /></li>)}</ul>
+  ) : <div class="empty"><h2>目前沒有會議</h2></div>}
+</Base>

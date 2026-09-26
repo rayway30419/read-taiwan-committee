@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.cache/
+apps-script/dist/
+.env
+.env.*
+!.env.example
+.clasp.json
+.DS_Store

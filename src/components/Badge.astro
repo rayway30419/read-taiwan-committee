@@ -1,0 +1,7 @@
+---
+import { toneOf } from '../core/enums';
+interface Props { status: string; label?: string; tone?: string }
+const { status, label, tone } = Astro.props;
+const t = tone ?? toneOf(status);
+---
+<span class:list={['badge', t !== 'info' && t]}>{label ?? status}</span>

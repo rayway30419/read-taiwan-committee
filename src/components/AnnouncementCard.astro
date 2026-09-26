@@ -1,0 +1,17 @@
+---
+import type { Announcement } from '../core/schema';
+import { hrefFor } from '../lib/urls';
+import { formatDate } from '../lib/format';
+interface Props { item: Announcement }
+const { item: a } = Astro.props;
+const excerpt = a.body.length > 100 ? `${a.body.slice(0, 100)}…` : a.body;
+---
+<article class="card">
+  <div class="card-top">
+    {a.pinned && <span class="badge">置頂</span>}
+    <span class="id">{a.display_id}</span>
+    <span class="meta">{formatDate(a.date)}</span>
+  </div>
+  <h3><a href={hrefFor(a.display_id)}>{a.title}</a></h3>
+  <p>{excerpt}</p>
+</article>

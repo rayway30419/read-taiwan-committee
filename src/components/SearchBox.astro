@@ -1,0 +1,11 @@
+---
+import { url } from '../lib/urls';
+interface Props { value?: string; hint?: string; id?: string; autofocus?: boolean }
+const { value = '', hint, id = 'q', autofocus = false } = Astro.props;
+---
+<form class="searchbox" role="search" action={url('search/')} method="get">
+  <label class="sr-only" for={id}>搜尋議題、待辦、決議、會議紀錄與管理辦法</label>
+  <input id={id} name="q" type="search" value={value} placeholder="輸入關鍵字或編號，例如 ISS-0002" autocomplete="off" autofocus={autofocus} />
+  <button type="submit">搜尋</button>
+</form>
+{hint && <p class="search-hint">{hint}</p>}

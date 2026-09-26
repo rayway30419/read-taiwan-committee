@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import ActionCard from '../../components/ActionCard.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import { loadSite } from '../../data';
+const site = await loadSite();
+---
+<Base title="待辦" nav="actions">
+  <p class="eyebrow">待辦</p>
+  <h1>待辦事項</h1>
+  <p class="muted">會議與議題產生的具體工作、負責單位與時程。</p>
+  <FilterBar
+    list="action-list"
+    noun="待辦"
+    total={site.actions.length}
+    filters={[
+      { key: 'status', label: '狀態', options: site.filters.actionStatus },
+      { key: 'owner', label: '負責單位', options: site.filters.actionOwnerType },
+    ]}
+  />
+  <ul class="list-grid" id="action-list">
+    {site.actions.map((a) => <li data-f-status={a.status} data-f-owner={a.owner_type}><ActionCard action={a} site={site} /></li>)}
+  </ul>
+</Base>

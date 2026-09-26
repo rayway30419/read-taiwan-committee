@@ -1,0 +1,70 @@
+---
+import '../styles/global.css';
+import { loadSite } from '../data';
+import { url } from '../lib/urls';
+import { formatDateTime } from '../lib/format';
+
+interface Props {
+  title?: string;
+  description?: string;
+  nav?: 'home' | 'issues' | 'actions' | 'decisions' | 'meetings' | 'rules' | 'announcements' | 'search';
+}
+const { title, description, nav } = Astro.props;
+const site = await loadSite();
+const s = site.settings;
+const fullTitle = title ? `${title}｜${s.site_name}${s.site_subtitle}` : `${s.site_name}${s.site_subtitle}`;
+const items = [
+  { key: 'home', href: url(), label: '總覽' },
+  { key: 'issues', href: url('issues/'), label: '議題' },
+  { key: 'actions', href: url('actions/'), label: '待辦' },
+  { key: 'decisions', href: url('decisions/'), label: '決議' },
+  { key: 'meetings', href: url('meetings/'), label: '會議紀錄' },
+  { key: 'rules', href: url('rules/'), label: '管理辦法' },
+  { key: 'announcements', href: url('announcements/'), label: '公告' },
+  { key: 'search', href: url('search/'), label: '搜尋' },
+];
+const noindex = s.noindex !== '否';
+---
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+    {s.top_banner && <div class="banner" role="note">{s.top_banner}</div>}
+    {s.privacy_note && <div class="privacy-bar" role="note">{s.privacy_note}</div>}
+    <header class="masthead">
+      <div class="wrap brand-row">
+        <a class="brand" href={url()}>
+          <span class="mark" aria-hidden="true">{s.site_name.slice(0, 1)}</span>
+          <span>
+            <span class="brand-name">{s.site_name}</span>
+            <span class="brand-sub" style="display:block">{s.site_subtitle}</span>
+          </span>
+        </a>
+        {s.term_label && <span class="term">{s.term_label}</span>}
+      </div>
+      <nav class="wrap mainnav" aria-label="主要導覽">
+        <ul>
+          {items.map((i) => <li><a href={i.href} aria-current={i.key === nav ? 'page' : undefined}>{i.label}</a></li>)}
+        </ul>
+      </nav>
+    </header>
+    <main id="main" class="wrap" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="footer">
+      <div class="wrap">
+        <p>資料截至 <time datetime={site.generatedAt}>{formatDateTime(site.generatedAt)}</time>・網站建置日 {site.today}</p>
+        {s.footer_note && <p>{s.footer_note}</p>}
+      </div>
+    </footer>
+  </body>
+</html>

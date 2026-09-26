@@ -1,0 +1,22 @@
+---
+import type { Decision } from '../core/schema';
+import type { SiteData } from '../core/derive';
+import { hrefFor } from '../lib/urls';
+import { formatDate } from '../lib/format';
+import Badge from './Badge.astro';
+interface Props { decision: Decision; site: SiteData; showIssue?: boolean }
+const { decision: d, site, showIssue = true } = Astro.props;
+const issue = d.issue_id ? site.issueById.get(d.issue_id) : undefined;
+const meeting = site.meetingById.get(d.meeting_id);
+---
+<article class="card">
+  <div class="card-top">
+    <Badge status={d.status} />
+    <span class="id">{d.display_id}</span>
+  </div>
+  <h3><a href={hrefFor(d.display_id)}>{d.title}</a></h3>
+  <p class="meta">
+    {formatDate(d.date)}{meeting && <>・<a href={hrefFor(meeting.display_id)}>{meeting.title}</a></>}
+  </p>
+  {showIssue && issue && <p class="meta">議題：<a href={hrefFor(issue.display_id)}>{issue.display_id} {issue.title}</a></p>}
+</article>

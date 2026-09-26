@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import Badge from '../../components/Badge.astro';
+import Crumb from '../../components/Crumb.astro';
+import Facts from '../../components/Facts.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import MeetingCard from '../../components/MeetingCard.astro';
+import Related from '../../components/Related.astro';
+import PagefindMeta from '../../components/PagefindMeta.astro';
+import { loadSite } from '../../data';
+import { url } from '../../lib/urls';
+import { formatDate } from '../../lib/format';
+import type { Action } from '../../core/schema';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.actions.map((action) => ({ params: { id: action.display_id }, props: { action } }));
+}
+const { action: a } = Astro.props as { action: Action };
+const site = await loadSite();
+const issue = site.issueById.get(a.issue_id);
+const meeting = a.source_meeting_id ? site.meetingById.get(a.source_meeting_id) : undefined;
+const schedule = [a.due_date && `到期 ${formatDate(a.due_date)}`, a.schedule_note].filter(Boolean).join('・');
+---
+<Base title={`${a.display_id} ${a.title}`} nav="actions">
+  <Crumb items={[{ label: '總覽', href: url() }, { label: '待辦', href: url('actions/') }, { label: a.display_id }]} />
+  <div data-pagefind-body>
+    <PagefindMeta type="待辦" id={a.display_id} title={a.title} badge={a.status} summary={[a.owner_type, a.owner, schedule].filter(Boolean).join('・')} text={[a.owner_type, a.owner, a.support, a.schedule_note]} />
+    <header class="detail-header">
+      <div class="card-top"><Badge status={a.status} /><span class="id">{a.display_id}</span>{a.priority && <span class="priority">{a.priority}</span>}</div>
+      <h1>{a.title}</h1>
+    </header>
+    <div class="detail-layout">
+      <div class="detail-main">
+        {a.content_masked && <p class="reading-note">此待辦涉及敏感資訊，網站僅公開狀態與負責單位。</p>}
+        <Related title="相關議題" count={issue ? 1 : 0}>{issue && <li><IssueCard issue={issue} compact /></li>}</Related>
+        <Related title="來源會議" count={meeting ? 1 : 0} empty="未指定來源會議">{meeting && <li><MeetingCard meeting={meeting} today={site.today} /></li>}</Related>
+      </div>
+      <aside aria-label="紀錄資訊" data-pagefind-ignore>
+        <section class="side-card" aria-labelledby="facts-title">
+          <h2 id="facts-title">紀錄資訊</h2>
+          <Facts
+            items={[
+              { label: '負責', value: [a.owner_type, a.owner].filter(Boolean).join('・'), unset: '待指定' },
+              { label: '協作', value: a.support },
+              { label: '時程', value: schedule },
+              { label: '建立日期', value: formatDate(a.created_at) },
+              { label: '完成日期', value: formatDate(a.completed_date), unset: a.status === '已完成' ? '尚未填寫' : '未完成' },
+            ]}
+          />
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

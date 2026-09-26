@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import IssueCard from '../components/IssueCard.astro';
+import AnnouncementCard from '../components/AnnouncementCard.astro';
+import SearchBox from '../components/SearchBox.astro';
+import { loadSite } from '../data';
+import { meetingBadge } from '../core/derive';
+import { hrefFor, url } from '../lib/urls';
+import { formatDate, formatDateTime } from '../lib/format';
+
+const site = await loadSite();
+const s = site.settings;
+const st = site.stats;
+const latest = site.latestMeeting;
+const examples = s.search_examples.split(/[、,，]/).map((x) => x.trim()).filter(Boolean);
+const hint = examples.length ? `可搜尋關鍵字（例如「${examples.join('」、「')}」）或編號（例如 ISS-0002）` : undefined;
+---
+<Base nav="home">
+  <div class="intro">
+    <div>
+      <p class="eyebrow">總覽</p>
+      <h1>{s.home_heading}</h1>
+      {s.home_lead && <p class="muted">{s.home_lead}</p>}
+    </div>
+    <p class="meta">資料快照：{formatDateTime(site.generatedAt)}</p>
+  </div>
+  <SearchBox hint={hint} />
+
+  <h2 class="sr-only">數量統計</h2>
+  <ul class="stats">
+    <li><a class="stat" href={url('issues/')}><b>{st.issuesTracked}</b>追蹤中議題<small>共 {st.issuesTotal} 項</small></a></li>
+    <li><a class="stat" href={url('actions/')}><b>{st.actionsTotal}</b>待辦<small>未完成 {st.actionsOpen} 項</small></a></li>
+    <li><a class="stat" href={url('decisions/')}><b>{st.decisionsTotal}</b>決議<small>含已修正</small></a></li>
+    <li><a class="stat" href={url('meetings/')}><b>{st.meetingsTotal}</b>會議索引<small>含已排程 {st.meetingsUpcoming} 場</small></a></li>
+  </ul>
+
+  <div class="columns">
+    <div>
+      {site.announcements.length > 0 && (
+        <section aria-labelledby="ann-title" style="margin-bottom:28px">
+          <div class="section-title"><h2 id="ann-title">最新公告</h2><a href={url('announcements/')}>全部公告</a></div>
+          <div class="panel">{site.announcements.slice(0, 2).map((a) => <AnnouncementCard item={a} />)}</div>
+        </section>
+      )}
+      <section aria-labelledby="recent-title">
+        <div class="section-title"><h2 id="recent-title">最近更新議題</h2><a href={url('issues/')}>查看全部議題</a></div>
+        {site.recentIssues.length ? (
+          <div class="panel">{site.recentIssues.map((i) => <IssueCard issue={i} />)}</div>
+        ) : (
+          <div class="empty"><h2>目前沒有議題</h2></div>
+        )}
+      </section>
+    </div>
+    <aside aria-label="會議與文件">
+      <section class="side-card" aria-labelledby="latest-title">
+        <h2 id="latest-title">最近會議</h2>
+        {latest ? (
+          <>
+            <p class="date-block">{formatDate(latest.date, true)}</p>
+            <p><a href={hrefFor(latest.display_id)}>{latest.title}</a></p>
+            <p class="meta">{meetingBadge(latest, site.today)}</p>
+          </>
+        ) : <p class="muted">尚無會議紀錄</p>}
+      </section>
+      <section class="side-card" aria-labelledby="upcoming-title">
+        <h2 id="upcoming-title">已排程會議</h2>
+        {site.upcomingMeetings.length ? (
+          <ul>
+            {site.upcomingMeetings.map((m) => (
+              <li>
+                <span class="date-block" style="display:block">{formatDate(m.date, true)}{m.time && ` ${m.time}`}</span>
+                <a href={hrefFor(m.display_id)}>{m.title}</a>
+              </li>
+            ))}
+          </ul>
+        ) : <p class="muted">目前沒有已排程會議</p>}
+      </section>
+      <section class="side-card" aria-labelledby="rules-title">
+        <h2 id="rules-title">規約與管理辦法</h2>
+        <p class="meta">共 {site.rules.length} 份文件，含草案與效力待確認版本。</p>
+        <a class="button" href={url('rules/')}>查看管理辦法</a>
+      </section>
+    </aside>
+  </div>
+</Base>

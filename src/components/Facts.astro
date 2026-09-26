@@ -1,0 +1,13 @@
+---
+// 空值顯示「尚未填寫」而不是隱藏，讓讀者知道欄位存在但未確認。
+interface Props { items: { label: string; value?: string | null; href?: string; unset?: string }[] }
+const { items } = Astro.props;
+---
+<dl class="facts">
+  {items.map((i) => (
+    <div>
+      <dt>{i.label}</dt>
+      <dd>{i.value ? (i.href ? <a href={i.href}>{i.value}</a> : i.value) : <em class="unset">{i.unset ?? '尚未填寫'}</em>}</dd>
+    </div>
+  ))}
+</dl>

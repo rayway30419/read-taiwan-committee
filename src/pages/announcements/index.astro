@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import AnnouncementCard from '../../components/AnnouncementCard.astro';
+import { loadSite } from '../../data';
+const site = await loadSite();
+---
+<Base title="公告" nav="announcements">
+  <p class="eyebrow">公告</p>
+  <h1>公告</h1>
+  {site.announcements.length ? (
+    <ul class="stack" style="margin-top:24px">{site.announcements.map((a) => <li><AnnouncementCard item={a} /></li>)}</ul>
+  ) : (
+    <div class="empty" style="margin-top:24px"><h2>目前沒有公告</h2><p>有新公告時會顯示在這裡。</p></div>
+  )}
+</Base>

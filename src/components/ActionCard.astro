@@ -1,0 +1,22 @@
+---
+import type { Action } from '../core/schema';
+import type { SiteData } from '../core/derive';
+import { hrefFor } from '../lib/urls';
+import { formatDate } from '../lib/format';
+import Badge from './Badge.astro';
+interface Props { action: Action; site: SiteData; showIssue?: boolean }
+const { action: a, site, showIssue = true } = Astro.props;
+const issue = site.issueById.get(a.issue_id);
+const owner = [a.owner_type, a.owner].filter(Boolean).join('・') || '待指定';
+const when = a.completed_date ? `完成 ${formatDate(a.completed_date)}` : a.due_date ? `到期 ${formatDate(a.due_date)}` : a.schedule_note;
+---
+<article class="card">
+  <div class="card-top">
+    <Badge status={a.status} />
+    <span class="id">{a.display_id}</span>
+    {a.priority && <span class="priority">{a.priority}</span>}
+  </div>
+  <h3><a href={hrefFor(a.display_id)}>{a.title}</a></h3>
+  <p class="meta">負責：{owner}{when && `・時程：${when}`}</p>
+  {showIssue && issue && <p class="meta">議題：<a href={hrefFor(issue.display_id)}>{issue.display_id} {issue.title}</a></p>}
+</article>

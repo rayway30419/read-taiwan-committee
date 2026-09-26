@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import SearchBox from '../components/SearchBox.astro';
+import { url } from '../lib/urls';
+---
+<Base title="找不到頁面">
+  <h1>找不到這個頁面</h1>
+  <p class="muted">網址可能有誤，或該筆資料已不公開。可以用編號或關鍵字搜尋：</p>
+  <SearchBox />
+  <p style="margin-top:20px"><a href={url()}>回到總覽</a></p>
+</Base>

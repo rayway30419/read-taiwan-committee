@@ -1,0 +1,134 @@
+{
+ "schema_version": 1,
+ "generated_at": "2026-09-25T19:00:00.000Z",
+ "settings": {
+  "site_name": "範例社區",
+  "site_subtitle": "社區治理資訊網",
+  "term_label": "第一屆管理委員會",
+  "home_heading": "關心的事，現在到哪裡？",
+  "home_lead": "查詢議題進度、決議與會議紀錄。",
+  "top_banner": "FIXTURE 測試資料・內容為虛構，僅供開發與 CI 使用",
+  "privacy_note": "個人識別資訊、帳戶與財務細節已遮蔽；本網站不代替完整正式文件。",
+  "search_examples": "電梯、公共冰箱",
+  "footer_note": "",
+  "noindex": "是",
+  "mask_money": "是",
+  "privacy_allow": ""
+ },
+ "options": {
+  "categories": ["行政", "物業", "點交", "門禁", "公設", "住戶服務", "保固", "外觀", "財務", "安全"],
+  "owner_types": ["管委會", "物業", "建商", "待指定"]
+ },
+ "privacy": { "sanitizer_version": "1", "masked_counts": { "dictionary": 3, "visibility": 6 } },
+ "data": {
+  "issues": [
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000001", "display_id": "ISS-0001", "_row": 2,
+    "title": "管委會成立與行政作業", "category": "行政", "status": "進行中", "priority": "P1",
+    "priority_reason": "報備與用印是後續接管的基礎。", "priority_confirmed": false, "lead": "主委",
+    "problem": "第一屆管委會選任後，須辦理報備與交接等行政程序。", "goal": "完成管委會合法運作所需行政程序。",
+    "next_action": "追蹤報備進度並整理交接文件", "close_criteria": "取得報備核准函", "target_date": "",
+    "closed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-23"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000002", "display_id": "ISS-0002", "_row": 3,
+    "title": "電梯異音與保養", "category": "公設", "status": "討論中", "priority": "P2",
+    "priority_reason": "", "priority_confirmed": true, "lead": "[姓名已遮蔽]",
+    "problem": "住戶反映 [戶別已遮蔽] 附近電梯運轉有異音，需確認保養紀錄。", "goal": "確認異音原因並排定維修。",
+    "next_action": "請物業提供保養紀錄", "close_criteria": "", "target_date": "2026-10-31",
+    "closed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-24"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000003", "display_id": "ISS-0003", "_row": 4,
+    "title": "公共冰箱使用規則", "category": "住戶服務", "status": "持續觀察", "priority": "",
+    "priority_reason": "", "priority_confirmed": false, "lead": "",
+    "problem": "公共冰箱放置物品無標示，造成清潔困擾。", "goal": "訂定標示與清理週期。",
+    "next_action": "", "close_criteria": "", "target_date": "",
+    "closed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-22"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000004", "display_id": "ISS-0004", "_row": 5,
+    "title": "公共基金", "category": "財務", "status": "受阻", "priority": "P1",
+    "priority_reason": "[財務內容已遮蔽]", "priority_confirmed": false, "lead": "待指定",
+    "problem": "[財務內容已遮蔽]", "goal": "[財務內容已遮蔽]",
+    "next_action": "[財務內容已遮蔽]", "close_criteria": "", "target_date": "",
+    "closed_date": "", "content_masked": true, "created_at": "2026-09-22", "updated_at": "2026-09-23"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000005", "display_id": "ISS-0005", "_row": 6,
+    "title": "門禁磁扣發放", "category": "門禁", "status": "已結案", "priority": "P2",
+    "priority_reason": "", "priority_confirmed": true, "lead": "物業",
+    "problem": "部分住戶尚未領取磁扣。", "goal": "完成磁扣發放與登記。",
+    "next_action": "", "close_criteria": "全數住戶完成登記", "target_date": "2026-09-30",
+    "closed_date": "2026-09-24", "content_masked": false, "created_at": "2026-09-01", "updated_at": "2026-09-24"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000006", "display_id": "ISS-0006", "_row": 7,
+    "title": "外牆滲水保固", "category": "保固", "status": "待排程", "priority": "",
+    "priority_reason": "", "priority_confirmed": false, "lead": "",
+    "problem": "雨後外牆有滲水痕跡。", "goal": "", "next_action": "", "close_criteria": "",
+    "target_date": "", "closed_date": "", "content_masked": false, "created_at": "2026-09-20", "updated_at": "2026-09-20"
+   }
+  ],
+  "actions": [
+   { "_internal_id": "f0000000-0000-4000-8000-000000000101", "display_id": "ACT-20260922-01", "_row": 2, "title": "辦理管委會報備", "issue_id": "ISS-0001", "source_meeting_id": "MTG-20260922", "owner_type": "物業", "owner": "", "support": "", "status": "進行中", "priority": "P1", "due_date": "", "schedule_note": "儘速", "completed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-23" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000102", "display_id": "ACT-20260922-02", "_row": 3, "title": "整理交接文件清單", "issue_id": "ISS-0001", "source_meeting_id": "MTG-20260922", "owner_type": "管委會", "owner": "[姓名已遮蔽]", "support": "物業", "status": "待處理", "priority": "P1", "due_date": "2026-10-10", "schedule_note": "", "completed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-22" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000103", "display_id": "ACT-20260922-03", "_row": 4, "title": "提供電梯保養紀錄", "issue_id": "ISS-0002", "source_meeting_id": "MTG-20260922", "owner_type": "物業", "owner": "", "support": "", "status": "已完成", "priority": "P2", "due_date": "", "schedule_note": "10/2 前", "completed_date": "2026-09-24", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-24" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000104", "display_id": "ACT-20260922-04", "_row": 5, "title": "聯繫電梯廠商到場檢查", "issue_id": "ISS-0002", "source_meeting_id": "MTG-20260922", "owner_type": "建商", "owner": "", "support": "物業", "status": "受阻", "priority": "P2", "due_date": "2026-09-30", "schedule_note": "", "completed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-25" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000105", "display_id": "ACT-20260922-05", "_row": 6, "title": "[財務待辦內容已遮蔽]", "issue_id": "ISS-0004", "source_meeting_id": "MTG-20260922", "owner_type": "待指定", "owner": "", "support": "建商／物業", "status": "待處理", "priority": "P1", "due_date": "", "schedule_note": "[財務內容已遮蔽]", "completed_date": "", "content_masked": true, "created_at": "2026-09-22", "updated_at": "2026-09-22" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000106", "display_id": "ACT-20260922-06", "_row": 7, "title": "張貼公共冰箱標示", "issue_id": "ISS-0003", "source_meeting_id": "", "owner_type": "物業", "owner": "", "support": "", "status": "已排程", "priority": "P3", "due_date": "2026-10-05", "schedule_note": "", "completed_date": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-22" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000107", "display_id": "ACT-20260901-01", "_row": 8, "title": "磁扣發放登記", "issue_id": "ISS-0005", "source_meeting_id": "", "owner_type": "物業", "owner": "", "support": "", "status": "已完成", "priority": "P2", "due_date": "", "schedule_note": "", "completed_date": "2026-09-24", "content_masked": false, "created_at": "2026-09-01", "updated_at": "2026-09-24" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000108", "display_id": "ACT-20260901-02", "_row": 9, "title": "改用舊式鑰匙", "issue_id": "ISS-0005", "source_meeting_id": "", "owner_type": "待指定", "owner": "", "support": "", "status": "已取消", "priority": "", "due_date": "", "schedule_note": "", "completed_date": "", "content_masked": false, "created_at": "2026-09-01", "updated_at": "2026-09-10" }
+  ],
+  "decisions": [
+   { "_internal_id": "f0000000-0000-4000-8000-000000000201", "display_id": "DEC-20260922-01", "_row": 2, "title": "電梯異音先請廠商檢查，再決定是否更換零件", "issue_id": "ISS-0002", "meeting_id": "MTG-20260922", "date": "2026-09-22", "status": "有效", "note": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-22" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000202", "display_id": "DEC-20260922-02", "_row": 3, "title": "公共冰箱每週一清理", "issue_id": "ISS-0003", "meeting_id": "MTG-20260922", "date": "2026-09-22", "status": "已修正", "note": "後續改為每週一、四清理。", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-24" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000203", "display_id": "DEC-20260922-03", "_row": 4, "title": "管委會會議每月召開一次", "issue_id": "", "meeting_id": "MTG-20260922", "date": "2026-09-22", "status": "有效", "note": "", "content_masked": false, "created_at": "2026-09-22", "updated_at": "2026-09-22" }
+  ],
+  "meetings": [
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000301", "display_id": "MTG-20260922", "_row": 2,
+    "title": "第一屆第一次委員會議", "type": "正式委員會", "date": "2026-09-22", "time": "20:30", "location": "社區會議室",
+    "status": "紀錄確認中", "confirmation_note": "主委已確認・委員確認中", "record_version": "v0.2", "public_file_url": "",
+    "body_md": "# 第一屆第一次委員會議紀錄\n\n## 一、會議資訊\n\n| 項目 | 內容 |\n|---|---|\n| 日期 | 2026-09-22 20:30 |\n| 地點 | 社區會議室 |\n| 主席 | [姓名已遮蔽] |\n\n## 二、討論事項\n\n### 2.1 行政作業（ISS-001）\n\n- 報備進度由物業追蹤，見 ACT-20260922-01。\n- 交接文件清單另行整理。\n\n### 2.2 電梯異音（ISS-0002）\n\n> 住戶反映 [戶別已遮蔽] 附近電梯有異音。\n\n決議：DEC-20260922-01。\n\n### 2.3 外牆滲水（ISS-0006）\n\n先行拍照記錄，待保固窗口回覆。\n\n## 三、臨時動議\n\n無。\n",
+    "source_filename": "第一屆第一次委員會議紀錄 v0.2.docx", "body_stale": false,
+    "created_at": "2026-09-20", "updated_at": "2026-09-24"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000302", "display_id": "MTG-20261002", "_row": 3,
+    "title": "委員工作會議", "type": "工作會議", "date": "2026-10-02", "time": "19:00", "location": "",
+    "status": "已排程", "confirmation_note": "", "record_version": "", "public_file_url": "",
+    "body_md": null, "source_filename": "", "body_stale": false, "created_at": "2026-09-22", "updated_at": "2026-09-22"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000303", "display_id": "MTG-20260901", "_row": 4,
+    "title": "籌備會議", "type": "臨時會議", "date": "2026-09-01", "time": "", "location": "",
+    "status": "已確認", "confirmation_note": "", "record_version": "v1.0", "public_file_url": "",
+    "body_md": "## 討論\n\n門禁磁扣發放（ISS-0005）由物業辦理。\n", "source_filename": "籌備會議紀錄.docx", "body_stale": true,
+    "created_at": "2026-09-01", "updated_at": "2026-09-02"
+   }
+  ],
+  "rules": [
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000401", "display_id": "RULE-001", "_row": 2,
+    "title": "社區規約", "status": "修訂版本・效力待確認", "effective_date": "", "note": "",
+    "public_file_url": "", "body_md": "## 第一章 總則\n\n### 第一條\n\n本規約依公寓大廈管理條例訂定。\n\n### 第二條\n\n| 用語 | 定義 |\n|---|---|\n| 區分所有權人 | 依法登記者 |\n",
+    "source_filename": "社區規約-修訂.docx", "body_stale": false, "created_at": "2026-09-20", "updated_at": "2026-09-20"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000402", "display_id": "RULE-002", "_row": 3,
+    "title": "裝潢管理辦法", "status": "現有文件・效力待確認", "effective_date": "", "note": "來源文件：裝潢管理辦法-完整版.docx",
+    "public_file_url": "", "body_md": null, "source_filename": "", "body_stale": false, "created_at": "2026-09-20", "updated_at": "2026-09-20"
+   },
+   {
+    "_internal_id": "f0000000-0000-4000-8000-000000000403", "display_id": "RULE-003", "_row": 4,
+    "title": "停車場相關辦法", "status": "草案", "effective_date": "", "note": "",
+    "public_file_url": "", "body_md": null, "source_filename": "", "body_stale": false, "created_at": "2026-09-20", "updated_at": "2026-09-20"
+   }
+  ],
+  "announcements": [
+   { "_internal_id": "f0000000-0000-4000-8000-000000000501", "display_id": "ANN-20260923-01", "_row": 2, "title": "電梯檢修公告", "date": "2026-09-23", "body": "電梯將於 9/30 上午檢修，請多利用另一部電梯。\n\n造成不便，敬請見諒。", "attachment_url": "", "issue_id": "ISS-0002", "pinned": true, "expires_date": "", "created_at": "2026-09-23", "updated_at": "2026-09-23" },
+   { "_internal_id": "f0000000-0000-4000-8000-000000000502", "display_id": "ANN-20260901-01", "_row": 3, "title": "已過期公告", "date": "2026-09-01", "body": "此公告已下架，不應出現在網站。", "attachment_url": "", "issue_id": "", "pinned": false, "expires_date": "2026-09-10", "created_at": "2026-09-01", "updated_at": "2026-09-01" }
+  ]
+ }
+}

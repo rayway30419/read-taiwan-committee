@@ -1,0 +1,9 @@
+---
+interface Props { items: { label: string; href?: string }[] }
+const { items } = Astro.props;
+---
+<nav class="crumb" aria-label="頁面位置">
+  <ol>
+    {items.map((i, n) => <li>{i.href ? <a href={i.href}>{i.label}</a> : <span aria-current={n === items.length - 1 ? 'page' : undefined}>{i.label}</span>}</li>)}
+  </ol>
+</nav>

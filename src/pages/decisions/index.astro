@@ -1,0 +1,16 @@
+---
+import Base from '../../layouts/Base.astro';
+import DecisionCard from '../../components/DecisionCard.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import { loadSite } from '../../data';
+const site = await loadSite();
+---
+<Base title="決議" nav="decisions">
+  <p class="eyebrow">決議</p>
+  <h1>決議紀錄</h1>
+  <p class="muted">委員會議通過的決議。完整措辭與條件以會議紀錄全文為準。</p>
+  <FilterBar list="decision-list" noun="決議" total={site.decisions.length} filters={[{ key: 'status', label: '狀態', options: site.filters.decisionStatus }]} />
+  <ul class="list-grid" id="decision-list">
+    {site.decisions.map((d) => <li data-f-status={d.status}><DecisionCard decision={d} site={site} /></li>)}
+  </ul>
+</Base>

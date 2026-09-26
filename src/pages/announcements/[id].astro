@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import Crumb from '../../components/Crumb.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import Related from '../../components/Related.astro';
+import PagefindMeta from '../../components/PagefindMeta.astro';
+import { loadSite } from '../../data';
+import { url } from '../../lib/urls';
+import { formatDate } from '../../lib/format';
+import type { Announcement } from '../../core/schema';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.announcements.map((item) => ({ params: { id: item.display_id }, props: { item } }));
+}
+const { item: a } = Astro.props as { item: Announcement };
+const site = await loadSite();
+const issue = a.issue_id ? site.issueById.get(a.issue_id) : undefined;
+---
+<Base title={a.title} nav="announcements">
+  <Crumb items={[{ label: '總覽', href: url() }, { label: '公告', href: url('announcements/') }, { label: a.display_id }]} />
+  <div data-pagefind-body>
+    <PagefindMeta type="公告" id={a.display_id} title={a.title} summary={a.body} text={[a.body]} />
+    <header class="detail-header">
+      <div class="card-top">{a.pinned && <span class="badge">置頂</span>}<span class="id">{a.display_id}</span></div>
+      <h1>{a.title}</h1>
+      <p class="meta">發布日期 {formatDate(a.date, true)}{a.expires_date && `・公告至 ${formatDate(a.expires_date)}`}</p>
+    </header>
+    <div class="article" style="max-width:900px">
+      <p class="prewrap">{a.body}</p>
+      {a.attachment_url && <p><a class="button" href={a.attachment_url} rel="noopener noreferrer" target="_blank">開啟附件</a></p>}
+    </div>
+    {issue && <Related title="相關議題" count={1}><li><IssueCard issue={issue} compact /></li></Related>}
+  </div>
+</Base>

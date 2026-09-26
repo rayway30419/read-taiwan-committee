@@ -1,0 +1,31 @@
+---
+// 列表篩選：無 JS 時顯示全部；有 JS 時依 select 篩選 [data-filter-list] 內的 li，並同步到網址 query。
+interface Props {
+  list: string;
+  total: number;
+  noun: string;
+  filters: { key: string; label: string; options: string[] }[];
+}
+const { list, total, noun, filters } = Astro.props;
+---
+<form class="toolbar" data-filter-form={list} aria-label={`篩選${noun}`}>
+  {filters.map((f) => (
+    <label>
+      {f.label}
+      <select name={f.key}>
+        <option value="">全部</option>
+        {f.options.map((o) => <option value={o}>{o}</option>)}
+      </select>
+    </label>
+  ))}
+  <button type="reset" class="reset">清除篩選</button>
+  <p class="count" aria-live="polite" data-filter-count>顯示 {total} / {total} 項</p>
+</form>
+<div class="empty" data-filter-empty hidden>
+  <h2>沒有符合條件的{noun}</h2>
+  <p>請調整或清除篩選條件。</p>
+</div>
+<script>
+  import { initFilters } from '../scripts/filter';
+  initFilters();
+</script>

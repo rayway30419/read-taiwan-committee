@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import FilterBar from '../../components/FilterBar.astro';
+import { loadSite } from '../../data';
+const site = await loadSite();
+---
+<Base title="議題" nav="issues">
+  <p class="eyebrow">議題</p>
+  <h1>議題追蹤</h1>
+  <p class="muted">社區關心的事項、目前狀態與下一步。</p>
+  <FilterBar
+    list="issue-list"
+    noun="議題"
+    total={site.issues.length}
+    filters={[
+      { key: 'status', label: '狀態', options: site.filters.issueStatus },
+      { key: 'category', label: '分類', options: site.filters.issueCategory },
+    ]}
+  />
+  <ul class="list-grid" id="issue-list">
+    {site.issues.map((i) => <li data-f-status={i.status} data-f-category={i.category}><IssueCard issue={i} heading="h2" /></li>)}
+  </ul>
+</Base>

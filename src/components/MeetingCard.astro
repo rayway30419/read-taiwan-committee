@@ -1,0 +1,19 @@
+---
+import type { Meeting } from '../core/schema';
+import { meetingBadge } from '../core/derive';
+import { toneOf } from '../core/enums';
+import { hrefFor } from '../lib/urls';
+import { formatDate } from '../lib/format';
+import Badge from './Badge.astro';
+interface Props { meeting: Meeting; today: string }
+const { meeting: m, today } = Astro.props;
+const badge = meetingBadge(m, today);
+---
+<article class="card">
+  <div class="card-top">
+    <Badge status={m.status} label={badge} tone={badge === '已排程' ? 'neutral' : toneOf(m.status)} />
+    <span class="id">{m.display_id}</span>
+  </div>
+  <h3><a href={hrefFor(m.display_id)}>{m.title}</a></h3>
+  <p class="meta">{formatDate(m.date, true)}{m.time && ` ${m.time}`}・{m.type}{m.location && `・${m.location}`}</p>
+</article>

@@ -1,0 +1,33 @@
+# PR / push：型別檢查、單元測試、以合成 fixture 建置並做 smoke / 個資掃描、打包 Apps Script。
+# 不讀取正式資料、不需要任何 secret。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Fixture build
+        run: npm run build
+        env:
+          DATA_SOURCE: fixture
+          BUILD_DATE: '2026-09-26'
+      - run: npm run smoke
+      - run: npm run build:apps-script

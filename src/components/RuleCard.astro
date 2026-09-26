@@ -1,0 +1,15 @@
+---
+import type { Rule } from '../core/schema';
+import { hrefFor } from '../lib/urls';
+import Badge from './Badge.astro';
+interface Props { rule: Rule }
+const { rule: r } = Astro.props;
+---
+<article class="card">
+  <div class="card-top">
+    <Badge status={r.status} />
+    <span class="id">{r.display_id}</span>
+  </div>
+  <h3><a href={hrefFor(r.display_id)}>{r.title}</a></h3>
+  {(r.source_filename || r.note) && <p class="meta">{r.source_filename || r.note}</p>}
+</article>

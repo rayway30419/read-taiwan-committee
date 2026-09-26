@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import Badge from '../../components/Badge.astro';
+import Crumb from '../../components/Crumb.astro';
+import Facts from '../../components/Facts.astro';
+import Related from '../../components/Related.astro';
+import ActionCard from '../../components/ActionCard.astro';
+import DecisionCard from '../../components/DecisionCard.astro';
+import MeetingCard from '../../components/MeetingCard.astro';
+import AnnouncementCard from '../../components/AnnouncementCard.astro';
+import PagefindMeta from '../../components/PagefindMeta.astro';
+import { loadSite } from '../../data';
+import { url } from '../../lib/urls';
+import { formatDate } from '../../lib/format';
+import type { Issue } from '../../core/schema';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.issues.map((issue) => ({ params: { id: issue.display_id }, props: { issue } }));
+}
+const { issue: i } = Astro.props as { issue: Issue };
+const site = await loadSite();
+const actions = site.rel.issueActions.get(i.display_id) ?? [];
+const decisions = site.rel.issueDecisions.get(i.display_id) ?? [];
+const meetings = site.rel.issueMeetings.get(i.display_id) ?? [];
+const anns = site.rel.issueAnnouncements.get(i.display_id) ?? [];
+const sections = [
+  { title: '問題', body: i.problem },
+  { title: '希望達成的目標', body: i.goal },
+  { title: '下一步', body: i.next_action },
+  { title: '結案條件', body: i.close_criteria },
+];
+---
+<Base title={`${i.display_id} ${i.title}`} description={i.content_masked ? undefined : i.problem.slice(0, 120)} nav="issues">
+  <Crumb items={[{ label: '總覽', href: url() }, { label: '議題', href: url('issues/') }, { label: i.display_id }]} />
+  <div data-pagefind-body>
+    <PagefindMeta type="議題" id={i.display_id} title={i.title} badge={i.status} summary={i.problem} text={[i.problem, i.goal, i.next_action, i.close_criteria, i.priority_reason, i.lead, i.category]} />
+    <header class="detail-header">
+      <div class="card-top"><Badge status={i.status} /><span class="id">{i.display_id}</span><span class="meta">{i.category}</span></div>
+      <h1>{i.title}</h1>
+      <p class="meta">更新 {formatDate(i.updated_at || i.created_at)}</p>
+    </header>
+    <div class="detail-layout">
+      <div class="detail-main">
+        {i.content_masked && <p class="reading-note">此議題涉及{i.category}等敏感資訊，網站僅公開標題、分類與狀態；詳細內容請洽管委會。</p>}
+        <div class="article">
+          {sections.map((s) => (
+            <section>
+              <h2>{s.title}</h2>
+              {s.body ? <p class="prewrap">{s.body}</p> : <p class="unset">待確認</p>}
+            </section>
+          ))}
+        </div>
+        <Related title="相關待辦" count={actions.length} empty="目前沒有相關待辦">
+          {actions.map((a) => <li><ActionCard action={a} site={site} showIssue={false} /></li>)}
+        </Related>
+        <Related title="相關決議" count={decisions.length} empty="目前沒有相關決議">
+          {decisions.map((d) => <li><DecisionCard decision={d} site={site} showIssue={false} /></li>)}
+        </Related>
+        <Related title="相關會議" count={meetings.length} empty="目前沒有相關會議">
+          {meetings.map((m) => <li><MeetingCard meeting={m} today={site.today} /></li>)}
+        </Related>
+        {anns.length > 0 && (
+          <Related title="相關公告" count={anns.length}>
+            {anns.map((a) => <li><AnnouncementCard item={a} /></li>)}
+          </Related>
+        )}
+      </div>
+      <aside aria-label="議題資訊" data-pagefind-ignore>
+        <section class="side-card" aria-labelledby="facts-title">
+          <h2 id="facts-title">議題資訊</h2>
+          <Facts
+            items={[
+              { label: '負責窗口', value: i.lead },
+              { label: '分類', value: i.category },
+              { label: '建立日期', value: formatDate(i.created_at) },
+              { label: '更新日期', value: formatDate(i.updated_at) },
+              { label: '目標日期', value: formatDate(i.target_date), unset: '待確認' },
+              ...(i.closed_date ? [{ label: '結案日期', value: formatDate(i.closed_date) }] : []),
+            ]}
+          />
+        </section>
+        {i.priority && (
+          <section class="side-card" aria-labelledby="prio-title">
+            <h2 id="prio-title">優先程度{i.priority_confirmed ? '' : '（建議）'}</h2>
+            <p class="date-block">{i.priority}</p>
+            {i.priority_reason && <p><b>優先理由</b><br />{i.priority_reason}</p>}
+            {!i.priority_confirmed && <p class="note">目前為初始化建議，尚非正式決議。</p>}
+          </section>
+        )}
+      </aside>
+    </div>
+  </div>
+</Base>

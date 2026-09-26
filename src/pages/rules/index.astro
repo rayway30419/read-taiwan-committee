@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import RuleCard from '../../components/RuleCard.astro';
+import { loadSite } from '../../data';
+const site = await loadSite();
+---
+<Base title="管理辦法" nav="rules">
+  <p class="eyebrow">管理辦法</p>
+  <h1>規約與管理辦法</h1>
+  <p class="muted">草案與效力待確認的文件會標示狀態；正式效力以區分所有權人會議決議為準。</p>
+  {site.rules.length ? (
+    <ul class="list-grid" style="margin-top:24px">{site.rules.map((r) => <li><RuleCard rule={r} /></li>)}</ul>
+  ) : <div class="empty"><h2>目前沒有文件</h2></div>}
+</Base>

@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import Badge from '../../components/Badge.astro';
+import Crumb from '../../components/Crumb.astro';
+import Facts from '../../components/Facts.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import MeetingCard from '../../components/MeetingCard.astro';
+import Related from '../../components/Related.astro';
+import PagefindMeta from '../../components/PagefindMeta.astro';
+import { loadSite } from '../../data';
+import { url } from '../../lib/urls';
+import { formatDate } from '../../lib/format';
+import type { Decision } from '../../core/schema';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.decisions.map((decision) => ({ params: { id: decision.display_id }, props: { decision } }));
+}
+const { decision: d } = Astro.props as { decision: Decision };
+const site = await loadSite();
+const issue = d.issue_id ? site.issueById.get(d.issue_id) : undefined;
+const meeting = site.meetingById.get(d.meeting_id);
+---
+<Base title={`${d.display_id} 決議`} nav="decisions">
+  <Crumb items={[{ label: '總覽', href: url() }, { label: '決議', href: url('decisions/') }, { label: d.display_id }]} />
+  <div data-pagefind-body>
+    <PagefindMeta type="決議" id={d.display_id} title={d.title} badge={d.status} summary={d.note || meeting?.title} text={[d.note]} />
+    <header class="detail-header">
+      <div class="card-top"><Badge status={d.status} /><span class="id">{d.display_id}</span></div>
+      <h1>{d.title}</h1>
+    </header>
+    <div class="detail-layout">
+      <div class="detail-main">
+        <p class="reading-note">此處顯示資料庫的決議紀錄；會議全文保留當時完整措辭與條件。</p>
+        {d.note && <div class="article"><h2>補充說明</h2><p class="prewrap">{d.note}</p></div>}
+        <Related title="相關議題" count={issue ? 1 : 0} empty="未指定相關議題">{issue && <li><IssueCard issue={issue} compact /></li>}</Related>
+        <Related title="來源會議" count={meeting ? 1 : 0}>{meeting && <li><MeetingCard meeting={meeting} today={site.today} /></li>}</Related>
+      </div>
+      <aside aria-label="決議資訊" data-pagefind-ignore>
+        <section class="side-card" aria-labelledby="facts-title">
+          <h2 id="facts-title">決議資訊</h2>
+          <Facts items={[{ label: '決議日期', value: formatDate(d.date) }, { label: '狀態', value: d.status }]} />
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>

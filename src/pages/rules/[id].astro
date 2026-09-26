@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import Badge from '../../components/Badge.astro';
+import Crumb from '../../components/Crumb.astro';
+import Facts from '../../components/Facts.astro';
+import Toc from '../../components/Toc.astro';
+import PagefindMeta from '../../components/PagefindMeta.astro';
+import { loadSite } from '../../data';
+import { renderMarkdown } from '../../lib/markdown';
+import { hrefFor, url } from '../../lib/urls';
+import { formatDate } from '../../lib/format';
+import type { Rule } from '../../core/schema';
+
+export async function getStaticPaths() {
+  const site = await loadSite();
+  return site.rules.map((rule) => ({ params: { id: rule.display_id }, props: { rule } }));
+}
+const { rule: r } = Astro.props as { rule: Rule };
+const site = await loadSite();
+const doc = r.body_md ? renderMarkdown(r.body_md, { knownIds: site.knownIds, hrefFor }) : null;
+const pending = r.status !== '已生效';
+---
+<Base title={r.title} nav="rules">
+  <Crumb items={[{ label: '總覽', href: url() }, { label: '管理辦法', href: url('rules/') }, { label: r.display_id }]} />
+  <div data-pagefind-body>
+    <PagefindMeta type="管理辦法" id={r.display_id} title={r.title} badge={r.status} summary={r.note || r.source_filename} text={[r.body_md, r.note, r.source_filename]} />
+    <header class="detail-header">
+      <div class="card-top"><Badge status={r.status} /><span class="id">{r.display_id}</span></div>
+      <h1>{r.title}</h1>
+      {r.source_filename && <p class="meta">來源文件：{r.source_filename}</p>}
+    </header>
+    <div class="detail-layout">
+      <div class="detail-main">
+        {r.note && <p class="reading-note">{r.note}</p>}
+        {doc ? (
+          <>
+            <p class="reading-note">以下為來源文件的文字與表格閱讀版。{pending && '草案及文件效力仍待確認；'}原始頁面版式、圖片與自動編號未完整重現。</p>
+            {r.body_stale && <p class="reading-note warn">原始文件已更新，網站內容待重新審核；目前顯示上次核准的版本。</p>}
+            <section class="article doc-body" aria-label="文件全文" set:html={doc.html} />
+          </>
+        ) : (
+          <div class="empty"><h2>全文尚未公開</h2><p>文件經遮蔽審核後會公開於此。</p></div>
+        )}
+      </div>
+      <aside aria-label="文件資訊" data-pagefind-ignore>
+        <section class="side-card" aria-labelledby="facts-title">
+          <h2 id="facts-title">文件資訊</h2>
+          <Facts
+            items={[
+              { label: '狀態', value: r.status },
+              { label: '生效日期', value: formatDate(r.effective_date), unset: pending ? '效力待確認' : '尚未填寫' },
+              ...(r.public_file_url ? [{ label: '原始檔案', value: '開啟公開檔案', href: r.public_file_url }] : []),
+            ]}
+          />
+        </section>
+        {doc && <Toc toc={doc.toc} />}
+      </aside>
+    </div>
+  </div>
+</Base>

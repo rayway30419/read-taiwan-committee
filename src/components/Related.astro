@@ -1,0 +1,9 @@
+---
+interface Props { title: string; count: number; empty?: string; id?: string }
+const { title, count, empty = '目前沒有資料', id } = Astro.props;
+const hid = id ?? `rel-${title}`;
+---
+<section class="related" aria-labelledby={hid} data-pagefind-ignore>
+  <h2 id={hid}>{title} <span class="meta">（{count}）</span></h2>
+  {count > 0 ? <ul class="stack"><slot /></ul> : <p class="muted">{empty}</p>}
+</section>

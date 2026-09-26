@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import SearchBox from '../../components/SearchBox.astro';
+import { loadSite } from '../../data';
+import { hrefFor } from '../../lib/urls';
+
+const site = await loadSite();
+const TYPES = ['全部', '議題', '待辦', '決議', '會議紀錄', '管理辦法', '公告'];
+// 編號完全比對用的小索引（僅公開欄位：編號、標題、類型、狀態）
+const idIndex = [
+  ...site.issues.map((x) => [x.display_id, x.title, '議題', x.status]),
+  ...site.actions.map((x) => [x.display_id, x.title, '待辦', x.status]),
+  ...site.decisions.map((x) => [x.display_id, x.title, '決議', x.status]),
+  ...site.meetings.map((x) => [x.display_id, x.title, '會議紀錄', x.status]),
+  ...site.rules.map((x) => [x.display_id, x.title, '管理辦法', x.status]),
+  ...site.announcements.map((x) => [x.display_id, x.title, '公告', '']),
+].map(([id, title, type, badge]) => ({ id, title, type, badge, url: hrefFor(id!) }));
+---
+<Base title="搜尋" nav="search">
+  <h1>搜尋</h1>
+  <SearchBox hint={site.settings.search_examples ? `例如：${site.settings.search_examples}` : undefined} autofocus />
+  <div class="search-types" role="group" aria-label="結果類型" data-search-types>
+    {TYPES.map((t, i) => <button type="button" data-type={t === '全部' ? '' : t} aria-pressed={i === 0 ? 'true' : 'false'}>{t}</button>)}
+  </div>
+  <p class="count" aria-live="polite" data-search-status>輸入關鍵字或編號開始搜尋。</p>
+  <ul class="stack" data-search-results></ul>
+  <noscript><p class="empty">搜尋需要啟用 JavaScript。也可以從上方導覽依類型瀏覽。</p></noscript>
+  <script type="application/json" id="id-index" set:html={JSON.stringify(idIndex).replace(/</g, '\\u003c')} />
+  <script>
+    import { initSearch } from '../../scripts/search';
+    initSearch();
+  </script>
+</Base>

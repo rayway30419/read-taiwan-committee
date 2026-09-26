@@ -1,0 +1,68 @@
+# 正式部署：下載 Apps Script 匯出的 public-dataset.json → 驗證 → 建置 → Pagefind → GitHub Pages。
+# 觸發：push main、Apps Script「發布網站」（workflow_dispatch）、每日 04:00（台北）排程。
+# 任何一步失敗都不會部署，網站保持上一版。產生的資料只存在 runner，不 commit。
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 20 * * *' # 20:00 UTC = 04:00 Asia/Taipei（Apps Script 03:00 先匯出）
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: 下載公開資料
+        run: npm run fetch-data
+        env:
+          PUBLIC_DATASET_URL: ${{ vars.PUBLIC_DATASET_URL }}
+      - name: 驗證並建置
+        run: npm run build
+        env:
+          DATA_SOURCE: file
+          DATASET_FILE: .cache/public-dataset.json
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - name: Smoke 檢查（頁面、搜尋索引、個資／私人連結掃描）
+        run: npm run smoke
+        env:
+          DATA_SOURCE: file
+          DATASET_FILE: .cache/public-dataset.json
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
